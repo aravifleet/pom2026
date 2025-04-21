@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from flask import request, current_app as app
 
 # Register a user
-def register_user():
+def register_user(session, mongo):
     # Get the data from the request (JSON body)
     session = request.get_json()
 
@@ -24,7 +24,7 @@ def register_user():
     return f"User {session['emp_id']} registered successfully!"
 
 # Login a user
-def login_user():
+def login_user(session, mongo):
     # Get the data from the request (JSON body)
     session = request.get_json()
 
