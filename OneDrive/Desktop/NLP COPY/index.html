@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Timesheet Chatbot</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #f4f4f4;
+    }
+    .chatbox {
+      width: 400px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 10px;
+      padding: 15px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .messages {
+      height: 300px;
+      overflow-y: auto;
+      margin-bottom: 10px;
+      border: 1px solid #ddd;
+      padding: 10px;
+      background-color: #fafafa;
+    }
+    .user, .bot {
+      margin-bottom: 10px;
+    }
+    .user {
+      text-align: right;
+      color: blue;
+    }
+    .bot {
+      text-align: left;
+      color: green;
+    }
+    input[type="text"] {
+      width: 80%;
+      padding: 10px;
+    }
+    button {
+      padding: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="chatbox">
+    <div class="messages" id="messages"></div>
+    <input type="text" id="userInput" placeholder="Type your work update...">
+    <button onclick="sendMessage()">Send</button>
+  </div>
+
+  <script>
+    function appendMessage(sender, text) {
+      const msgDiv = document.createElement("div");
+      msgDiv.className = sender;
+      msgDiv.textContent = text;
+      document.getElementById("messages").appendChild(msgDiv);
+    }
+
+    function sendMessage() {
+      const input = document.getElementById("userInput");
+      const userText = input.value.trim();
+      if (userText === "") return;
+
+      appendMessage("user", "You: " + userText);
+      input.value = "";
+
+      fetch("http://localhost:5000/nlp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: userText })
+      })
+      .then(res => res.json())
+      .then(data => {
+        appendMessage("bot", "Bot: " + data.response);
+      })
+      .catch(err => {
+        appendMessage("bot", "Bot: Error reaching server");
+        console.error(err);
+      });
+    }
+  </script>
+</body>
+</html>
