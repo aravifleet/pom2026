@@ -1,0 +1,43 @@
+name: Playwright Pytest Automation Suite
+
+on:
+  push:
+    branches: ["pytest1", "main"]
+  pull_request:
+    branches: ["pytest1", "main"]
+  workflow_dispatch: # Allows manual trigger from GitHub Actions tab
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python Environment
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Python Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Install Playwright Browsers with Dependencies
+        run: |
+          playwright install --with-deps chromium
+
+      - name: Run Pytest Playwright Data-Driven Tests
+        run: |
+          pytest -v -s --junitxml=results.xml
+
+      - name: Upload Test Results Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pytest-execution-report
+          path: |
+            results.xml
+            *.png
